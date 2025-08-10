@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import Counter from "../components/Counter";
 import ListView from "../components/ListView";
 import { SORT, LOCAL_STORAGE_KEY } from "@/lib/constants";
@@ -12,13 +12,27 @@ export default function HomePage() {
   const [count, setCount] = useState(0);
   const [items, setItems] = useState([]);
   const [sortOrder, setSortOrder] = useState(SORT.ASC); // "asc" | "desc"
+const [toast, setToast] = useState(null); // { text: string } | null
+const toastTimerRef = useRef(null);
+const showToast = useCallback((text, ttl = 2500) => {
+  setToast({ text });
+  if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+  toastTimerRef.current = setTimeout(() => setToast(null), ttl);
+}, []);
+useEffect(() => () => clearTimeout(toastTimerRef.current), []);
+
+
+const dismissToast = useCallback(() => {
+  if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+  setToast(null);
+}, []);
 
   // Load the saved list once on mounting
   useEffect(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (saved) setItems(JSON.parse(saved));
-    } catch {
+    } catch(e) {
   console.error("error found while saving the list",e);
     } 
   }, []);
@@ -39,17 +53,16 @@ export default function HomePage() {
 
   const handleAdd = useCallback(() => {
     if (count <= 0) 
-      {
-       showFlash("Enter a number greater than 0 to add.", "warning");
-return; 
-      }// only add positive numbers
+      {// only add positive numbers
+         return; 
+      }
 
     setItems((prev) => {
       // duplicates are ignored
       if (prev.includes(count))
         {   
+          showToast(`Not added: ${count} is already in the list.`);
           console.log("Skipping the current count as the same count already presnet in the list of items");
-
           return prev;
          }
       return [...prev, count];
@@ -109,6 +122,26 @@ return;
         </section>
 
       </div>
+      {toast && (
+  <div
+    className="fixed bottom-5 right-5 z-50 rounded-md border border-white/10 bg-black/80 px-3 py-2 text-sm text-white shadow-lg backdrop-blur"
+    role="status"
+    aria-live="polite"
+  >
+    <div className="flex items-start gap-3">
+      <span>{toast.text}</span>
+      <button
+        type="button"
+        onClick={dismissToast}
+        className="ml-auto rounded border border-white/10 bg-white/10 px-2 text-xs hover:bg-white/20"
+        aria-label="Dismiss"
+        title="Dismiss"
+      >
+        ×
+      </button>
+    </div>
+  </div>
+)}
     </main>
   );
 }
