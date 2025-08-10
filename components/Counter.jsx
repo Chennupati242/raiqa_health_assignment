@@ -2,6 +2,20 @@
 
 import { useMemo } from "react";
 
+/**
+ * Counter
+ * Props:
+ *  - value: current counter number (controlled by parent component Page component )
+ *  - onIncrement(): bump the counter by 1 (parent updates state)
+ *  - onDecrement(): lower by 1, parent should guard not going < 0
+ *  - onAdd(): request to add the current value to the list (handled in parent)
+ *
+ * UX rules:
+ *  - Decrement disabled when value is 0
+ *  - Add disabled when value is 0
+ *  - The big number uses tabular-nums for tidy alignment
+ */
+
 
 export default function Counter({ value, onIncrement, onDecrement, onAdd }) {
   const canDecrement = value > 0;
