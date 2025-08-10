@@ -2,7 +2,20 @@
 
 import { useMemo } from "react";
 import { SORT, LOCAL_STORAGE_KEY } from "@/lib/constants";
-
+/**
+ * ListView
+ * Props:
+ *  - items: array of numbers to display (already sorted by parent)
+ *  - sortOrder: "asc" | "desc" (the current order the parent applied)
+ *  - onToggleSort(): parent flips sort order and re-computes items
+ *  - onResetList(): parent clears the list
+ *
+ * Behavior:
+ *  - Shows a “Sort” toggle that reflects current state (Asc/Desc)
+ *  - Shows a “Clear list” button (disabled when there are no items)
+ *  - Renders a small “Current order” hint
+ *  - Lists each number; parent is responsible for preventing duplicates
+ */
 
 export default function ListView({ items, sortOrder, onToggleSort, onResetList }) {
 const orderLabel =
