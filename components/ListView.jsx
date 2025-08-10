@@ -5,7 +5,8 @@ import { SORT, LOCAL_STORAGE_KEY } from "@/lib/constants";
 
 
 export default function ListView({ items, sortOrder, onToggleSort, onResetList }) {
-
+const orderLabel =
+    sortOrder === SORT.ASC ? "Ascending (1 → n)" : "Descending (n → 1)";
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
@@ -28,6 +29,9 @@ export default function ListView({ items, sortOrder, onToggleSort, onResetList }
         >
           Clear list
         </button>
+      </div>
+       <div className="text-xs text-white/60">
+        Current order: <span className="text-white font-medium">{orderLabel}</span>
       </div>
 
       {items.length === 0 ? (
